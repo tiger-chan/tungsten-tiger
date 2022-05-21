@@ -1,5 +1,8 @@
+#if !defined(SPECS_HPP__)
+#	define SPECS_HPP__
 
-#include <ostream>
+#	include <ostream>
+#	include "sem_ver.hpp"
 
 namespace tt {
 	enum class architecture {
@@ -21,12 +24,6 @@ namespace tt {
 		cxx20,
 	};
 
-	struct sem_ver {
-		unsigned long major = 0;
-		unsigned long minor = 0;
-		unsigned long patch = 0;
-	};
-
 	struct compiler_spec {
 		bool debug;
 		cpp_standard cxx;
@@ -38,26 +35,26 @@ namespace tt {
 	namespace {
 		static constexpr compiler_spec create_compiler_spec() {
 			compiler_spec spec{};
-#ifdef NDEBUG
+#	ifdef NDEBUG
 			spec.debug = false;
-#else
+#	else
 			spec.debug = true;
-#endif
+#	endif
 
 // ARCHITECTURES
-#ifdef _M_X64
+#	ifdef _M_X64
 			spec.arch = architecture::x64;
-#elif defined(_M_IX86) || __1386__
+#	elif defined(_M_IX86) || __1386__
 			spec.arch = architecture::x86;
-#elif __x86_64__
+#	elif __x86_64__
 			spec.arch = architecture::x86_64;
-#endif
+#	endif
 
-#if _MSVC_LANG
+#	if _MSVC_LANG
 			constexpr long long ver = _MSVC_LANG;
-#elif __cplusplus
+#	elif __cplusplus
 			constexpr long long ver = __cplusplus;
-#endif
+#	endif
 
 			if constexpr (ver < 202002L) {
 				spec.cxx = cpp_standard::cxx17;
@@ -67,28 +64,28 @@ namespace tt {
 			}
 
 // COMPILER VERSIONS
-#if _MSC_VER
+#	if _MSC_VER
 			spec.compiler = compiler::msvc;
 			spec.ver.major = _MSC_VER / 100;
 			spec.ver.minor = _MSC_VER % 100;
 			spec.ver.patch = 0;
-#elif __GNUC__
+#	elif __GNUC__
 			spec.compiler = compiler::gcc;
 			spec.ver.major = __GNUC__;
 			spec.ver.minor = __GNUC_MINOR__;
 			spec.ver.patch = __GNUC_PATCHLEVEL__;
-#elif __clang_major__
+#	elif __clang_major__
 			spec.compiler = compiler::clang;
 			spec.ver.major = __clang_major__;
 			spec.ver.minor = __clang_minor__;
 			spec.ver.patch = __clang_patchlevel__;
-#endif
+#	endif
 
-#if __INTEL_COMPILER
+#	if __INTEL_COMPILER
 			spec.compiler = compiler::intel;
-#elif __apple_build_version__
+#	elif __apple_build_version__
 			spec.compiler = compiler::apple;
-#endif
+#	endif
 
 			return spec;
 		}
@@ -97,7 +94,7 @@ namespace tt {
 	static constexpr compiler_spec spec = tt::create_compiler_spec();
 }    // namespace tt
 
-static std::ostream& operator<<(std::ostream& os, tt::architecture arch) {
+static std::ostream &operator<<(std::ostream &os, tt::architecture arch) {
 	switch (arch) {
 		case tt::architecture::x86: return os << "x86";
 		case tt::architecture::x86_64: return os << "x86_64";
@@ -106,7 +103,7 @@ static std::ostream& operator<<(std::ostream& os, tt::architecture arch) {
 	return os;
 }
 
-static std::ostream& operator<<(std::ostream& os, tt::compiler c) {
+static std::ostream &operator<<(std::ostream &os, tt::compiler c) {
 	switch (c) {
 		case tt::compiler::apple: return os << "apple";
 		case tt::compiler::clang: return os << "clang";
@@ -117,7 +114,7 @@ static std::ostream& operator<<(std::ostream& os, tt::compiler c) {
 	return os;
 }
 
-static std::ostream& operator<<(std::ostream& os, tt::cpp_standard c) {
+static std::ostream &operator<<(std::ostream &os, tt::cpp_standard c) {
 	switch (c) {
 		case tt::cpp_standard::cxx17: return os << "c++17";
 		case tt::cpp_standard::cxx20: return os << "c++20";
@@ -125,6 +122,4 @@ static std::ostream& operator<<(std::ostream& os, tt::cpp_standard c) {
 	return os;
 }
 
-static std::ostream& operator<<(std::ostream& os, tt::sem_ver ver) {
-	return os << ver.major << "." << ver.minor << "." << ver.patch;
-}
+#endif    // SPECS_HPP__

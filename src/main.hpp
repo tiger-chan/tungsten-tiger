@@ -2,6 +2,7 @@
 #define __MAIN_HPP__
 
 #include <SDL.h>
+#include <bgfx/bgfx.h>
 #undef main
 
 
