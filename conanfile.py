@@ -23,9 +23,9 @@ class TungstenTigerConan(ConanFile):
     }
 
     # Sources are located in the same place as this recipe, copy them to the recipe
-    exports_sources = "CMakeLists.txt", "src/*", "include/*"
+    exports_sources = "CMakeLists.txt", "src/*"
 
-    requires = ["bgfx/1.115.8144-1b2b921", "sdl/2.0.20"]
+    requires = ["bgfx/1.115.8144-1b2b921", "sdl/2.0.20", "glm/0.9.9.8"]
 
     generators = []
 

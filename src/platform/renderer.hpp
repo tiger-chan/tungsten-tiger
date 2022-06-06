@@ -5,6 +5,10 @@ namespace tt {
 	struct renderer_manager {
 		virtual int init() = 0;
 		virtual void shutdown() = 0;
+
+		virtual struct material *get_materials() const {
+			return nullptr;
+		}
 	};
 
 	extern renderer_manager &get_renderer();
