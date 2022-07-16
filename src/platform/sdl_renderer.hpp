@@ -13,6 +13,9 @@ namespace tt {
 		int init() override;
 		void shutdown() override;
 
+		uint32 height() const override;
+		uint32 width() const override;
+
 		SDL_Window *window = nullptr;
 	};
 

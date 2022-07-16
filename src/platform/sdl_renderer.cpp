@@ -79,6 +79,18 @@ namespace tt {
 		SDL_Quit();
 	}
 
+	uint32 sdl_renderer_manager::height() const {
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+		return h;
+	}
+
+	uint32 sdl_renderer_manager::width() const {
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+		return w;
+	}
+
 	renderer_manager &get_renderer() {
 		static sdl_renderer_manager renderer{};
 		return renderer;

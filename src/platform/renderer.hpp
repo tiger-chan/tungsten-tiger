@@ -1,10 +1,15 @@
 #if !defined(PLATFORM_RENDERER_HPP__)
 #	define PLATFORM_RENDERER_HPP__
 
+#	include <system_types.hpp>
+
 namespace tt {
 	struct renderer_manager {
 		virtual int init() = 0;
 		virtual void shutdown() = 0;
+
+		virtual uint32 height() const = 0;
+		virtual uint32 width() const = 0;
 
 		virtual struct material *get_materials() const {
 			return nullptr;
