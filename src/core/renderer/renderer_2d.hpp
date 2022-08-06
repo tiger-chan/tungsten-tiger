@@ -1,7 +1,10 @@
-#include <system_types.hpp>
-#include "components.hpp"
+#if !defined(CORE_RENDERER_RENDERER_2D_HPP__)
+#	define CORE_RENDERER_RENDERER_2D_HPP__
 
-#include <core/string.hpp>
+#	include "components.hpp"
+
+#	include <core/string.hpp>
+#	include <system_types.hpp>
 
 namespace tt {
 	struct renderer_2d {
@@ -27,13 +30,7 @@ namespace tt {
 		virtual void str(const tt::string &, vec2 c, const font & = default_font, uint color = default_color) = 0;
 
 		virtual void cam(const camera *) = 0;
-
-		// Start frame (bind buffers for usage)
-		virtual void begin() = 0;
-		// release buffers from usage
-		virtual void end() = 0;
-		virtual void submit(const entity &) = 0;
-		// submit changes to the GPU
-		virtual void present() = 0;
 	};
-}
+}    // namespace tt
+
+#endif    // CORE_RENDERER_RENDERER_2D_HPP__

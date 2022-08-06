@@ -1,5 +1,9 @@
-#include "system_types.hpp"
-#include <glm/glm.hpp>
+#if !defined(CORE_RENDERER_COMPONENTS_HPP__)
+#	define CORE_RENDERER_COMPONENTS_HPP__
+
+#	include "system_types.hpp"
+
+#	include <glm/glm.hpp>
 
 namespace tt {
 	struct position {
@@ -17,9 +21,6 @@ namespace tt {
 	struct camera {
 	};
 
-	struct texture {
-	};
-
 	using uvs = glm::vec2;
 
 	struct mesh;
@@ -35,7 +36,7 @@ namespace tt {
 		double radius;
 	};
 
-	struct box {
+	struct cuboid {
 		double height;
 		double width;
 		double depth;
@@ -44,8 +45,10 @@ namespace tt {
 	struct font {
 	};
 
-	struct entity {};
+	enum class entity {};
 
 	static constexpr const uint default_color = 0xff'ff'ff'ff;
 	static constexpr const font default_font = {};
-}
+}    // namespace tt
+
+#endif    // CORE_RENDERER_COMPONENTS_HPP__

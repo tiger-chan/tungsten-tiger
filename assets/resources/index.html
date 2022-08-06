@@ -1,0 +1,55 @@
+<html>
+
+<head>
+	<style type="text/css">
+		body {
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			color: black;
+			font-family: Arial;
+			background: transparent;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		div {
+			width: 350px;
+			height: 350px;
+			text-align: center;
+			border-radius: 25px;
+			background: linear-gradient(-45deg, #e5eaf9, #f9eaf6);
+			box-shadow: 0 7px 18px -6px #8f8ae1;
+		}
+
+		h1 {
+			padding: 1em;
+		}
+
+		p {
+			background: white;
+			padding: 2em;
+			margin: 40px;
+			border-radius: 25px;
+		}
+	</style>
+</head>
+
+<body>
+	<div>
+		<h1>Hello World!</h1>
+		<p>Welcome to Ultralight!</p>
+		<p id="ticker">0</p>
+	</div>
+
+	<script type="text/javascript">
+		let ticker = document.getElementById("ticker");
+		let count = 0;
+		setInterval(() => {
+			ticker.innerText = ++count;
+		}, 1000);
+	</script>
+</body>
+
+</html>

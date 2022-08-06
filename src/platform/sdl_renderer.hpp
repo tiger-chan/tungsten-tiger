@@ -16,6 +16,14 @@ namespace tt {
 		uint32 height() const override;
 		uint32 width() const override;
 
+		// Start frame (bind buffers for usage)
+		void begin() override;
+		// release buffers from usage
+		void end() override;
+		void submit(const entity &) override;
+		// submit changes to the GPU
+		void present() override;
+
 		SDL_Window *window = nullptr;
 	};
 

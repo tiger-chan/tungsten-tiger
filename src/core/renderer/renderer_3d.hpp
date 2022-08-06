@@ -1,6 +1,10 @@
-#include "components.hpp"
+#if !defined(CORE_RENDERER_RENDERER_3D_HPP__)
+#	define CORE_RENDERER_RENDERER_3D_HPP__
 
-#include <system_types.hpp>
+#	include "components.hpp"
+
+#	include <system_types.hpp>
+#	include <core/string.hpp>
 
 namespace tt {
 	struct renderer_3d {
@@ -31,14 +35,8 @@ namespace tt {
 		// draw meshes / scenes
 
 		virtual void cam(const camera *) = 0;
-
-		// Start frame (bind buffers for usage)
-		virtual void begin() = 0;
-		// release buffers from usage
-		virtual void end() = 0;
-		// Submit mesh for rendering
-		virtual void submit(const entity &) = 0;
-		// submit changes to the GPU
-		virtual void present() = 0;
 	};
+
 }    // namespace tt
+
+#endif    // CORE_RENDERER_RENDERER_3D_HPP__

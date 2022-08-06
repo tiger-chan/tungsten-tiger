@@ -1,30 +1,28 @@
-#include <system_types.hpp>
-#include "components.hpp"
+#if !defined(CORE_RENDERER_MATERIAL_HPP__)
+#	define CORE_RENDERER_MATERIAL_HPP__
+
+#	include <system_types.hpp>
+#	include "components.hpp"
 
 namespace tt {
-	struct shader;
-	struct texture;
-	struct font;
 	enum render_flags;
 	struct material {
-		byte *uniforms;
-		shader *shader;
-		texture *textures;
+		entity shader;
+		entity textures;
 
-		uint uniforms_size;
 		uint textures_size;
 		render_flags flags;
 	};
 
 	struct material_instance {
-		material *mat;
+		entity mat;
 
-		byte *uniforms;
-		shader *shader;
-		texture *textures;
+		entity shader_program;
+		entity textures;
 
-		uint uniforms_size;
 		uint textures_size;
 		render_flags flags;
 	};
 }    // namespace tt
+
+#endif    // CORE_RENDERER_MATERIAL_HPP__

@@ -59,7 +59,7 @@ namespace tt {
 			// Clear the view rect
 			bgfx::setViewClear(0,
 				BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH,
-				0x443355FF,
+				0x333333FF,
 				1.0f,
 				0);
 
@@ -91,6 +91,22 @@ namespace tt {
 		return w;
 	}
 
+	void sdl_renderer_manager::begin() { 
+
+	}
+
+	void sdl_renderer_manager::end() { 
+
+	}
+
+	void sdl_renderer_manager::submit(const entity &){ 
+
+	}
+
+	void sdl_renderer_manager::present(){ 
+
+	}
+	
 	renderer_manager &get_renderer() {
 		static sdl_renderer_manager renderer{};
 		return renderer;

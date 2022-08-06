@@ -2,6 +2,7 @@
 #	define PLATFORM_RENDERER_HPP__
 
 #	include <system_types.hpp>
+#include <core/renderer/components.hpp>
 
 namespace tt {
 	struct renderer_manager {
@@ -14,6 +15,14 @@ namespace tt {
 		virtual struct material *get_materials() const {
 			return nullptr;
 		}
+
+		// Start frame (bind buffers for usage)
+		virtual void begin() = 0;
+		// release buffers from usage
+		virtual void end() = 0;
+		virtual void submit(const entity &) = 0;
+		// submit changes to the GPU
+		virtual void present() = 0;
 	};
 
 	extern renderer_manager &get_renderer();

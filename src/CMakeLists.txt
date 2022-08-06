@@ -5,5 +5,5 @@ target_sources(TungstenTiger
 
 target_include_directories(TungstenTiger PUBLIC .)
 
-include(${CMAKE_CURRENT_LIST_DIR}/core/_core.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/platform/_platform.cmake)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/core)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/platform)

@@ -1,0 +1,6 @@
+PROJ_DIR=../..
+BGFX_DIR=/mnt/d/dev/conan-bgfx/bgfx.cmake/bgfx
+RUNTIME_DIR=$(PROJ_DIR)/runtime
+BUILD_DIR=$(PROJ_DIR)/.build
+
+include $(BGFX_DIR)/scripts/shader.mk
