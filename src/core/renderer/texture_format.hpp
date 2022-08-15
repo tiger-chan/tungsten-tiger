@@ -1,0 +1,128 @@
+#if !defined(CORE_RENDERER_TEXTURE_FORMAT_HPP__)
+#	define CORE_RENDERER_TEXTURE_FORMAT_HPP__
+
+#	include <system_types.hpp>
+
+namespace tt {
+	enum texture_format {
+		// DXT1 R5G6B5A1
+		TF_BC1,
+		// DXT3 R5G6B5A4
+		TF_BC2,
+		// DXT5 R5G6B5A8
+		TF_BC3,
+		// LATC1/ATI1 R8
+		TF_BC4,
+		// LATC2/ATI2 RG8
+		TF_BC5,
+		// BC6H RGB16F
+		TF_BC6H,
+		// BC7 RGB 4-7 bits per color TF_channel, 0-8 bits alpha
+		TF_BC7,
+		// ETC1 RGB8
+		TF_ETC1,
+		// ETC2 RGB8
+		TF_ETC2,
+		// ETC2 RGBA8
+		TF_ETC2A,
+		// ETC2 RGB8A1
+		TF_ETC2A1,
+		// PVRTC1 RGB 2BPP
+		TF_PTC12,
+		// PVRTC1 RGB 4BPP
+		TF_PTC14,
+		// PVRTC1 RGBA 2BPP
+		TF_PTC12A,
+		// PVRTC1 RGBA 4BPP
+		TF_PTC14A,
+		// PVRTC2 RGBA 2BPP
+		TF_PTC22,
+		// PVRTC2 RGBA 4BPP
+		TF_PTC24,
+		// ATC RGB 4BPP
+		TF_ATC,
+		// ATCE RGBA 8 BPP explicit alpha
+		TF_ATCE,
+		// ATCI RGBA 8 BPP interpolated alpha
+		TF_ATCI,
+		// ASTC 4x4 8.0 BPP
+		TF_ASTC4x4,
+		// ASTC 5x5 5.12 BPP
+		TF_ASTC5x5,
+		// ASTC 6x6 3.56 BPP
+		TF_ASTC6x6,
+		// ASTC 8x5 3.20 BPP
+		TF_ASTC8x5,
+		// ASTC 8x6 2.67 BPP
+		TF_ASTC8x6,
+		// ASTC 10x5 2.56 BPP
+		TF_ASTC10x5,
+
+		// Compressed formats above.
+		TF_Unknown,
+
+		TF_R1,
+		TF_A8,
+		TF_R8,
+		TF_R8I,
+		TF_R8U,
+		TF_R8S,
+		TF_R16,
+		TF_R16I,
+		TF_R16U,
+		TF_R16F,
+		TF_R16S,
+		TF_R32I,
+		TF_R32U,
+		TF_R32F,
+		TF_RG8,
+		TF_RG8I,
+		TF_RG8U,
+		TF_RG8S,
+		TF_RG16,
+		TF_RG16I,
+		TF_RG16U,
+		TF_RG16F,
+		TF_RG16S,
+		TF_RG32I,
+		TF_RG32U,
+		TF_RG32F,
+		TF_RGB8,
+		TF_RGB8I,
+		TF_RGB8U,
+		TF_RGB8S,
+		TF_RGB9E5F,
+		TF_BGRA8,
+		TF_RGBA8,
+		TF_RGBA8I,
+		TF_RGBA8U,
+		TF_RGBA8S,
+		TF_RGBA16,
+		TF_RGBA16I,
+		TF_RGBA16U,
+		TF_RGBA16F,
+		TF_RGBA16S,
+		TF_RGBA32I,
+		TF_RGBA32U,
+		TF_RGBA32F,
+		TF_R5G6B5,
+		TF_RGBA4,
+		TF_RGB5A1,
+		TF_RGB10A2,
+		TF_RG11B10F,
+
+		// Depth formats below.
+		TF_UnknownDepth,
+
+		TF_D16,
+		TF_D24,
+		TF_D24S8,
+		TF_D32,
+		TF_D16F,
+		TF_D24F,
+		TF_D32F,
+		TF_D0S8,
+	};
+}
+
+#endif    // CORE_RENDERER_TEXTURE_FORMAT_HPP__

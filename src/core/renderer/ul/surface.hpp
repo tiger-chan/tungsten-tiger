@@ -2,8 +2,8 @@
 #	define CORE_RENDERER_UL_SURFACE_HPP__
 
 #	include <system_types.hpp>
-#	include <bgfx/bgfx.h>
 #	include <Ultralight/platform/Surface.h>
+#	include <platform/renderer.hpp>
 
 namespace tt {
 	struct texture_surface_vert {
@@ -13,7 +13,7 @@ namespace tt {
 		uint32 u : 8;
 		uint32 v : 8;
 
-		static bgfx::VertexLayout &layout();
+		static tt::vertex_layout &layout();
 	};
 
 	class texture_surface : public ultralight::Surface {
@@ -45,11 +45,11 @@ namespace tt {
 		uint8 *mem;
 		texture_surface_vert verts[4];
 		uint16 indicies[6];
-		bgfx::TextureHandle texture;
-		bgfx::FrameBufferHandle frame_buffer;
-		bgfx::UniformHandle texture_uniform;
-		bgfx::VertexBufferHandle vert_buffer;
-		bgfx::IndexBufferHandle idx_buffer;
+		texture_handle texture;
+		framebuffer_handle frame_buffer;
+		uniform_handle texture_uniform;
+		vertex_buffer_handle vert_buffer;
+		index_buffer_handle idx_buffer;
 		bool mapped;
 	};
 

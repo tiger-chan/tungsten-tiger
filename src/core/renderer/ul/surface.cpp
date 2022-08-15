@@ -1,13 +1,14 @@
 #include "surface.hpp"
+#include <core/renderer/vertex_layout.hpp>
 
 // TEMP texture vert
 namespace tt {
-	bgfx::VertexLayout& texture_surface_vert::layout() {
-		static bgfx::VertexLayout layout{};
-		layout.begin()
-			.add(bgfx::Attrib::Position,  3, bgfx::AttribType::Float)
-			.add(bgfx::Attrib::TexCoord0,  4, bgfx::AttribType::Uint8, true, true)
-			.end();
+	vertex_layout& texture_surface_vert::layout() {
+		static vertex_layout layout{};
+		tt::layout_begin(layout);
+		tt::layout_add(layout, VA_POSITION, VAT_FLOAT, 3);
+		tt::layout_add(layout, VA_TEX_COORD_0, VAT_UINT8, 4, true, true);
+		tt::layout_end(layout);
 
 		return layout;
 	}
@@ -83,37 +84,36 @@ namespace tt {
 		mem = new uint8[sz];
 		std::memset(mem, '\0', sz);
 
-		texture_uniform = bgfx::createUniform("Ultralight_Surface", bgfx::UniformType::Sampler);
+		
+		texture_uniform = get_renderer().create_uniform(UT_SAMPLER, "ultralight_surface");
 
 		// Create our Texture object.
-		auto flags = BGFX_SAMPLER_MIN_POINT
-				   | BGFX_SAMPLER_U_CLAMP
-				   | BGFX_SAMPLER_V_CLAMP
-				   | BGFX_TEXTURE_RT;
-		texture = bgfx::createTexture2D(w, h, false, 1, bgfx::TextureFormat::BGRA8, flags);
-		bgfx::setName(texture, "Ultralight Surface");
+		auto flags = TF_SAMPLER_MIN_POINT
+				   | TF_SAMPLER_U_CLAMP
+				   | TF_SAMPLER_V_CLAMP
+				   | TF_TEXTURE_RT;
+		
+		texture = get_renderer().create_texture_2d(w, h, TF_BGRA8, flags, "ultralight surface texture");
 
-		frame_buffer = bgfx::createFrameBuffer(1, &texture, true);
-
-		vert_buffer = bgfx::createVertexBuffer(bgfx::makeRef(verts, sizeof(verts)), texture_surface_vert::layout());
-		idx_buffer = bgfx::createIndexBuffer(bgfx::makeRef(indicies, sizeof(indicies)));
+		frame_buffer = get_renderer().create_framebuffer(&texture, 1, true);
+		vert_buffer = get_renderer().create_vertex_buffer(verts, sizeof(verts), texture_surface_vert::layout());
+		idx_buffer = get_renderer().create_index_buffer(indicies, sizeof(indicies));
 	}
 
 	void texture_surface::frame() {
-		auto mem_ref = bgfx::makeRef(mem, sz);
-		bgfx::updateTexture2D(texture, 0, 0, 0, 0, w, h, mem_ref);
+		get_renderer().update_texture_2d(texture, 0, 0, 0, 0, w, h, mem, sz);
 
-		bgfx::setVertexBuffer(0, vert_buffer);
-		bgfx::setIndexBuffer(idx_buffer);
-		bgfx::setTexture(0, texture_uniform, texture);
+		get_renderer().set_vertex_buffer(vert_buffer, 0);
+		get_renderer().set_index_buffer(idx_buffer);
+		get_renderer().set_texture(texture_uniform, texture, 0);
 	}
 
 	void texture_surface::destroy() {
 		if (mem) {
-			bgfx::destroy(frame_buffer);
-			bgfx::destroy(texture_uniform);
-			bgfx::destroy(idx_buffer);
-			bgfx::destroy(vert_buffer);
+			get_renderer().destroy(frame_buffer);
+			get_renderer().destroy(texture_uniform);
+			get_renderer().destroy(idx_buffer);
+			get_renderer().destroy(vert_buffer);
 			delete[] mem;
 			mem = nullptr;
 		}

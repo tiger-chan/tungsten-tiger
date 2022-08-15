@@ -43,54 +43,6 @@ namespace {
 
 		return std::make_tuple(bytes, size);
 	}
-
-	///
-	/// Our HTML string to load into the View.
-	///
-	const char *htmlString() {
-		return R"(
-    <html>
-      <head>
-        <style type="text/css">
-          body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            color: black;
-            font-family: Arial;
-            background: transparent;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          }
-          div {
-            width: 350px;
-            height: 350px;
-            text-align: center;
-            border-radius: 25px;
-            background: linear-gradient(-45deg, #e5eaf9, #f9eaf6);
-            box-shadow: 0 7px 18px -6px #8f8ae1;
-          }
-          h1 {
-            padding: 1em;
-          }
-          p {
-            background: white;
-            padding: 2em;
-            margin: 40px;
-            border-radius: 25px;
-          }
-        </style>
-      </head>
-      <body>
-        <div>
-          <h1>Hello World!</h1>
-          <p>Welcome to Ultralight!</p>
-        </div>
-      </body>
-    </html>
-    )";
-	}
 }
 
 int main() {
@@ -120,50 +72,12 @@ int main() {
 	ultralight::Platform::instance().set_surface_factory(surface_factory.get());
 	ultralight::Platform::instance().set_file_system(file_system.get());
 
-	byte *shader_data[2];
-	bgfx::ShaderHandle shaders[2];
-	bgfx::ProgramHandle ul_shader_prog = BGFX_INVALID_HANDLE;
-	// Load shaders
-	{
-		std::filesystem::path root(std::filesystem::absolute("."));
-		root /= "assets";
-		root /= "shaders";
+	tt::shader_handle shaders[2];
+	tt::shader_program_handle ul_shader_prog;
+	shaders[0] = tt::get_renderer().create_shader("vs_texture.bin", tt::shader_stage::vertex);
+	shaders[1] = tt::get_renderer().create_shader("fs_texture.bin", tt::shader_stage::fragment);
 
-		switch (bgfx::getRendererType() )
-		{
-		case bgfx::RendererType::Noop:
-		case bgfx::RendererType::Direct3D9:  root /= "dx9";   break;
-		case bgfx::RendererType::Direct3D11:
-		case bgfx::RendererType::Direct3D12: root /= "dx11";  break;
-		case bgfx::RendererType::Agc:
-		case bgfx::RendererType::Gnm:        root /= "pssl";  break;
-		case bgfx::RendererType::Metal:      root /= "metal"; break;
-		case bgfx::RendererType::Nvn:        root /= "nvn";   break;
-		case bgfx::RendererType::OpenGL:     root /= "glsl";  break;
-		case bgfx::RendererType::OpenGLES:   root /= "essl";  break;
-		case bgfx::RendererType::Vulkan:     root /= "spirv"; break;
-		case bgfx::RendererType::WebGPU:     root /= "spirv"; break;
-
-		case bgfx::RendererType::Count:
-			return EXIT_FAILURE;
-		}
-
-		auto fs_shader = root / "fs_texture.bin";
-		auto vs_shader = root / "vs_texture.bin";
-		auto as_str = vs_shader.string();
-		auto [vs_bytes, vs_size] = read_binary(as_str.c_str());
-		as_str = fs_shader.string();
-		auto [fs_bytes, fs_size] = read_binary(as_str.c_str());
-
-		shaders[0] = bgfx::createShader(bgfx::makeRef(vs_bytes, vs_size));
-		shader_data[0] = vs_bytes;
-		bgfx::setName(shaders[0], "vs_texture.bin");
-		shaders[1] = bgfx::createShader(bgfx::makeRef(fs_bytes, fs_size));
-		shader_data[1] = fs_bytes;
-		bgfx::setName(shaders[1], "fs_texture.bin");
-		
-		ul_shader_prog = bgfx::createProgram(shaders[0], shaders[1]);
-	}
+	ul_shader_prog = tt::get_renderer().create_shader_program(shaders[0], shaders[1]);
 
 
 	{
@@ -171,8 +85,6 @@ int main() {
 
 		auto ul_view = ul_renderer->CreateView(renderer.width(), renderer.height(), true, nullptr);
 
-		//ul_view->LoadHTML(htmlString());
-		//ul_view->LoadURL("https://google.com");
 		ul_view->LoadURL("file:///index.html");
 
 		double accumulator = 0;
@@ -211,7 +123,7 @@ int main() {
 							   | BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_INV_FACTOR, BGFX_STATE_BLEND_INV_SRC_ALPHA)
 							   | BGFX_STATE_MSAA);
 
-				bgfx::submit(20, ul_shader_prog);
+				tt::get_renderer().submit(ul_shader_prog, 20);
 
 				bgfx::frame();
 				accumulator -= 1 / 60.0;
@@ -219,12 +131,9 @@ int main() {
 		}
 	}
 
-	bgfx::destroy(ul_shader_prog);
-	bgfx::destroy(shaders[0]);
-	bgfx::destroy(shaders[1]);
-
-	delete[] shader_data[0];
-	delete[] shader_data[1];
+	tt::get_renderer().destroy(ul_shader_prog);
+	tt::get_renderer().destroy(shaders[0]);
+	tt::get_renderer().destroy(shaders[1]);
 
 	renderer.shutdown();
 

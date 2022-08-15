@@ -3,8 +3,6 @@ project(TungstenTiger CXX)
 
 add_executable(${PROJECT_NAME} "src/tungsten_tiger.cpp" src/main.cpp)
 
-
-
 find_package(bgfx REQUIRED)
 find_package(glm REQUIRED)
 find_package(SDL2 REQUIRED)
