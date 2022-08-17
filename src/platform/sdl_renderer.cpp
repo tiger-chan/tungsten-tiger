@@ -212,6 +212,7 @@ namespace tt {
 	}
 
 	void sdl_renderer_manager::present() {
+		bgfx::frame();
 	}
 
 	uniform_handle sdl_renderer_manager::create_uniform(uniform_type type, const char *name) {
@@ -378,6 +379,18 @@ namespace tt {
 		auto &texture = registry.get<::texture>(handle_cast(texture_handle));
 
 		bgfx::setTexture(stage, uniform.handle, texture.handle);
+	}
+
+	void sdl_renderer_manager::set_state(uint64 state, uint32 rgba) {
+		bgfx::setState(state, rgba);
+	}
+
+	void sdl_renderer_manager::set_view_rect(uint16 view, uint16 x, uint16 y, uint16 width, uint16 height) {
+		bgfx::setViewRect(view, x, y, width, height);
+	}
+
+	void sdl_renderer_manager::touch(uint16 view) {
+		bgfx::touch(view);
 	}
 
 	void sdl_renderer_manager::destroy(framebuffer_handle handle) {

@@ -3,6 +3,7 @@
 
 #	include <system_types.hpp>
 #	include <core/renderer/components.hpp>
+#	include <core/renderer/renderer_state.hpp>
 #	include <core/renderer/texture_flags.hpp>
 #	include <core/renderer/texture_format.hpp>
 #	include <core/renderer/uniform_type.hpp>
@@ -65,6 +66,10 @@ namespace tt {
 		virtual void set_vertex_buffer(vertex_buffer_handle handle, uint8 stream) = 0;
 		virtual void set_index_buffer(index_buffer_handle handle) = 0;
 		virtual void set_texture(uniform_handle uniform, texture_handle texture, uint16 stage) = 0;
+		virtual void set_state(uint64 state, uint32 rgba = 0) = 0;
+		virtual void set_view_rect(uint16 view, uint16 x, uint16 y, uint16 width, uint16 height) = 0;
+
+		virtual void touch(uint16 view) = 0;
 
 		virtual void destroy(framebuffer_handle handle) = 0;
 		virtual void destroy(texture_handle handle) = 0;

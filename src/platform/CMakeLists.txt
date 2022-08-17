@@ -13,4 +13,5 @@ endif()
 target_sources(TungstenTiger
 		PUBLIC
 			"${CMAKE_CURRENT_LIST_DIR}/sdl_renderer.cpp"
+			"${CMAKE_CURRENT_LIST_DIR}/ul_screen_overlay.cpp"
 	)
