@@ -16,6 +16,10 @@ namespace tt {
 	};
 
 	struct color {
+		uint32 r: 8;
+		uint32 g: 8;
+		uint32 b: 8;
+		uint32 a: 8;
 	};
 
 	struct camera {
@@ -47,7 +51,7 @@ namespace tt {
 
 	enum class entity {};
 
-	static constexpr const uint default_color = 0xff'ff'ff'ff;
+	static constexpr const color default_color{ 0xff, 0xff, 0xff, 0xff };
 	static constexpr const font default_font = {};
 }    // namespace tt
 

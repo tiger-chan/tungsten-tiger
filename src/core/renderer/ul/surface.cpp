@@ -4,11 +4,16 @@
 // TEMP texture vert
 namespace tt {
 	vertex_layout& texture_surface_vert::layout() {
-		static vertex_layout layout{};
-		tt::layout_begin(layout);
-		tt::layout_add(layout, VA_POSITION, VAT_FLOAT, 3);
-		tt::layout_add(layout, VA_TEX_COORD_0, VAT_UINT8, 4, true, true);
-		tt::layout_end(layout);
+		static vertex_layout layout{[]() {
+			vertex_layout layout;
+			
+			tt::layout_begin(layout);
+			tt::layout_add(layout, VA_POSITION, VAT_FLOAT, 3);
+			tt::layout_add(layout, VA_TEX_COORD_0, VAT_UINT8, 4, true, true);
+			tt::layout_end(layout);
+
+			return layout;
+		}()};
 
 		return layout;
 	}

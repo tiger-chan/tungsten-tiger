@@ -90,6 +90,18 @@ namespace tt {
 	static constexpr T max(const T &x, const T &y) {
 		return x > y ? x : y;
 	}
+
+	template<typename T>
+	static constexpr T abs(const T &v) {
+		return v < 0 ? -v : v;
+	}
 }    // namespace tt
+
+#	ifndef ALIGN_UP
+// https://stackoverflow.com/a/4840428/3261668
+#		define ALIGN_UP(x, a) ((x + (a - 1)) & ~(a - 1))
+#		define ALIGN_DOWN(x, a) (x & ~(a - 1))
+
+#	endif
 
 #endif    // SYSTEM_TYPES_HPP__

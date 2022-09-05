@@ -42,7 +42,7 @@ namespace tt {
 		// Allow dynamic index/vertex buffer resize during update.
 		VB_BUFFER_ALLOW_RESIZE = 0x0800,
 		// Index buffer contains 32-bit indices.
-		VB_BUFFER_INDEX32 = 0x1000,
+		VB_BUFFER_INDEX_32 = 0x1000,
 
 		VB_BUFFER_COMPUTE_READ_WRITE = VB_BUFFER_COMPUTE_READ | VB_BUFFER_COMPUTE_WRITE
 	};

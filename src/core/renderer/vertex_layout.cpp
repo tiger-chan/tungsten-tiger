@@ -1,4 +1,5 @@
 #include "vertex_layout.hpp"
+#include <bgfx/bgfx.h>
 
 namespace {
 	template<uint32 Size>
@@ -30,6 +31,28 @@ namespace tt {
 	}
 
 	void layout_end(vertex_layout &layout) {
+		bgfx::VertexLayout result{};
+		// Calculate stride by converting to bgfx.
+		// This isn't idea but as there are multiple backends
+		// this simplifies the general calulation for the wrapper
+		{
+			auto bgfx_attrib = [](uint16 e) {
+				return static_cast<bgfx::Attrib::Enum>(e);
+			};
+
+			auto bgfx_attrib_type = [](uint16 e) {
+				return static_cast<bgfx::AttribType::Enum>(e);
+			};
+
+			result.begin();
+			for (int8 i = 0; i < layout.size; ++i) {
+				auto &detail = layout.details[i];
+				result.add(bgfx_attrib(detail.attr), uint8(detail.quantity), bgfx_attrib_type(detail.type), !!detail.normalized, !!detail.as_int);
+			}
+			result.end();
+		}
+
+		layout.stride = result.m_stride;
 	}
 
 	void layout_add(vertex_layout &layout, vertex_attr attr, vertex_attr_type type, uint8 quantity, bool normalized, bool as_int) {

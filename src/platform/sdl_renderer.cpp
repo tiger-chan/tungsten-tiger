@@ -10,6 +10,7 @@
 #include <bgfx/bgfx.h>
 #include <bgfx/platform.h>
 #include <core/renderer/vertex_layout.hpp>
+#include <core/renderer/memory/allocator.hpp>
 
 namespace {
 	std::tuple<byte *, uint32> read_binary(const char *filename) {
@@ -90,13 +91,39 @@ namespace {
 	};
 
 	struct vertex_buffer {
-		bgfx::VertexBufferHandle handle;
+		vertex_buffer(bgfx::VertexBufferHandle h, tt::vertex_layout l, tt::vertex_buffer_flags f)
+			: vb_handle{ h }
+			, layout{ l }
+			, flags{ f } {
+		}
+		vertex_buffer(bgfx::DynamicVertexBufferHandle h, tt::vertex_layout l, tt::vertex_buffer_flags f)
+			: dvb_handle{ h }
+			, layout{ l }
+			, flags{ f } {
+		}
+
+		union {
+			bgfx::VertexBufferHandle vb_handle{};
+			bgfx::DynamicVertexBufferHandle dvb_handle;
+		};
 		tt::vertex_layout layout;
 		tt::vertex_buffer_flags flags;
 	};
 
 	struct index_buffer {
-		bgfx::IndexBufferHandle handle;
+		index_buffer(bgfx::IndexBufferHandle h, tt::index_buffer_flags f)
+			: ib_handle{ h }
+			, flags{ f } {
+		}
+		index_buffer(bgfx::DynamicIndexBufferHandle h, tt::index_buffer_flags f)
+			: dib_handle{ h }
+			, flags{ f } {
+		}
+
+		union {
+			bgfx::IndexBufferHandle ib_handle{};
+			bgfx::DynamicIndexBufferHandle dib_handle;
+		};
 		tt::index_buffer_flags flags;
 	};
 	
@@ -176,14 +203,19 @@ namespace tt {
 			bgfx::touch(0);
 		}
 
+		gl::allocator().init();
+
 		return 0;
 	}
 
 	void sdl_renderer_manager::shutdown() {
+		gl::allocator().shutdown();
+
+		bgfx::shutdown();
+		
 		// Free up window
 		SDL_DestroyWindow(window);
 
-		bgfx::shutdown();
 		// Shutdown SDL
 		SDL_Quit();
 	}
@@ -206,13 +238,16 @@ namespace tt {
 	void sdl_renderer_manager::end() {
 	}
 
-	void sdl_renderer_manager::submit(const shader_program_handle &program_handle, uint16 view, uint32 depth, uint8 flags) {
+	void sdl_renderer_manager::submit(const shader_program_handle &program_handle, uint8 view, uint32 depth, uint8 flags) {
 		auto &program = registry.get<::shader_program>(handle_cast(program_handle));
 		bgfx::submit(view, program.handle, depth, flags);
 	}
 
 	void sdl_renderer_manager::present() {
 		bgfx::frame();
+
+		// Garbage Collection for the gl allocator
+		gl::allocator().cleanup();
 	}
 
 	uniform_handle sdl_renderer_manager::create_uniform(uniform_type type, const char *name) {
@@ -239,7 +274,7 @@ namespace tt {
 	texture_handle sdl_renderer_manager::create_texture_2d(uint16 w, uint16 h, texture_format format, uint16 num_layers, uint64 flags, const char *name = nullptr) {
 		auto handle = bgfx::createTexture2D(w, h, true, num_layers, bgfx_cast(format), flags);
 		if (name) {
-			bgfx::setName(handle, "Ultralight Surface");
+			bgfx::setName(handle, name);
 		}
 
 		auto entity = registry.create();
@@ -276,6 +311,17 @@ namespace tt {
 		return handle_cast<vertex_buffer_handle>(entity);
 	}
 
+	dyn_vertex_buffer_handle sdl_renderer_manager::create_dyn_vertex_buffer(const void *mem, uint32 size, const vertex_layout &layout, vertex_buffer_flags flags) {
+		auto converted_layout = bgfx_cast(layout);
+
+		auto handle = bgfx::createDynamicVertexBuffer(bgfx::makeRef(mem, size * layout.stride), converted_layout, flags);
+
+		auto entity = registry.create();
+		registry.emplace<::vertex_buffer>(entity, handle, layout, flags);
+
+		return handle_cast<dyn_vertex_buffer_handle>(entity);
+	}
+
 	index_buffer_handle sdl_renderer_manager::create_index_buffer(const void *mem, uint32 size, index_buffer_flags flags) {
 		auto handle = bgfx::createIndexBuffer(bgfx::makeRef(mem, size), flags);
 
@@ -283,6 +329,16 @@ namespace tt {
 		registry.emplace<::index_buffer>(entity, handle, flags);
 
 		return handle_cast<index_buffer_handle>(entity);
+	}
+
+	dyn_index_buffer_handle sdl_renderer_manager::create_dyn_index_buffer(const void *mem, uint32 size, index_buffer_flags flags) {
+		auto stride = (flags & IB_INDEX_32) == IB_INDEX_32 ? 4 : 2;
+		auto handle = bgfx::createDynamicIndexBuffer(bgfx::makeRef(mem, size * stride), flags);
+
+		auto entity = registry.create();
+		registry.emplace<::index_buffer>(entity, handle, flags);
+
+		return handle_cast<dyn_index_buffer_handle>(entity);
 	}
 
 	shader_handle sdl_renderer_manager::create_shader(const char *name, shader_stage stage) {
@@ -364,14 +420,24 @@ namespace tt {
 		bgfx::updateTexture2D(texture.handle, layers, mip_layer, offset_x, offset_y, w, h, mem_ref, pitch);
 	}
 
+	void sdl_renderer_manager::set_vertex_buffer(dyn_vertex_buffer_handle handle, uint8 stream, int32 start, int32 count) {
+		auto &vert_buffer = registry.get<::vertex_buffer>(handle_cast(handle));
+		bgfx::setVertexBuffer(stream, vert_buffer.dvb_handle, start, count);
+	}
+
 	void sdl_renderer_manager::set_vertex_buffer(vertex_buffer_handle handle, uint8 stream) {
 		auto &vert_buffer = registry.get<::vertex_buffer>(handle_cast(handle));
-		bgfx::setVertexBuffer(stream, vert_buffer.handle);
+		bgfx::setVertexBuffer(stream, vert_buffer.vb_handle);
+	}
+	
+	void sdl_renderer_manager::set_index_buffer(dyn_index_buffer_handle handle, int32 start, int32 count) {
+		auto &buffer = registry.get<::index_buffer>(handle_cast(handle));
+		bgfx::setIndexBuffer(buffer.dib_handle, start, count);
 	}
 
 	void sdl_renderer_manager::set_index_buffer(index_buffer_handle handle) {
 		auto &buffer = registry.get<::index_buffer>(handle_cast(handle));
-		bgfx::setIndexBuffer(buffer.handle);
+		bgfx::setIndexBuffer(buffer.ib_handle);
 	}
 
 	void sdl_renderer_manager::set_texture(uniform_handle uniform_handle, texture_handle texture_handle, uint16 stage) {
@@ -385,11 +451,15 @@ namespace tt {
 		bgfx::setState(state, rgba);
 	}
 
-	void sdl_renderer_manager::set_view_rect(uint16 view, uint16 x, uint16 y, uint16 width, uint16 height) {
+	void sdl_renderer_manager::set_view_rect(uint8 view, uint16 x, uint16 y, uint16 width, uint16 height) {
 		bgfx::setViewRect(view, x, y, width, height);
 	}
 
-	void sdl_renderer_manager::touch(uint16 view) {
+	void sdl_renderer_manager::set_view_transform(uint8 view_id, const float *view, const float *proj) {
+		bgfx::setViewTransform(view_id, view, proj);
+	}
+
+	void sdl_renderer_manager::touch(uint8 view) {
 		bgfx::touch(view);
 	}
 
@@ -420,7 +490,15 @@ namespace tt {
 	void sdl_renderer_manager::destroy(vertex_buffer_handle handle) {
 		auto entity = handle_cast(handle);
 		auto &data = registry.get<::vertex_buffer>(entity);
-		bgfx::destroy(data.handle);
+		bgfx::destroy(data.vb_handle);
+
+		registry.destroy(entity);
+	}
+	
+	void sdl_renderer_manager::destroy(dyn_vertex_buffer_handle handle) {
+		auto entity = handle_cast(handle);
+		auto &data = registry.get<::vertex_buffer>(entity);
+		bgfx::destroy(data.dvb_handle);
 
 		registry.destroy(entity);
 	}
@@ -428,7 +506,15 @@ namespace tt {
 	void sdl_renderer_manager::destroy(index_buffer_handle handle) {
 		auto entity = handle_cast(handle);
 		auto &data = registry.get<::index_buffer>(entity);
-		bgfx::destroy(data.handle);
+		bgfx::destroy(data.ib_handle);
+
+		registry.destroy(entity);
+	}
+	
+	void sdl_renderer_manager::destroy(dyn_index_buffer_handle handle) {
+		auto entity = handle_cast(handle);
+		auto &data = registry.get<::index_buffer>(entity);
+		bgfx::destroy(data.dib_handle);
 
 		registry.destroy(entity);
 	}
@@ -448,6 +534,17 @@ namespace tt {
 		bgfx::destroy(data.handle);
 
 		registry.destroy(entity);
+	}
+
+	void sdl_renderer_manager::update(dyn_index_buffer_handle handle, byte *mem, int16 mem_size, int32 start) {
+		auto &buffer = registry.get<::index_buffer>(handle_cast(handle));
+		auto stride = (buffer.flags & IB_INDEX_32) == IB_INDEX_32 ? 4 : 2;
+		bgfx::update(buffer.dib_handle, start, bgfx::makeRef(mem, mem_size * stride));
+	}
+
+	void sdl_renderer_manager::update(dyn_vertex_buffer_handle handle, byte *mem, int16 mem_size, int32 start) {
+		auto &buffer = registry.get<::vertex_buffer>(handle_cast(handle));
+		bgfx::update(buffer.dvb_handle, start, bgfx::makeRef(mem, mem_size * buffer.layout.stride));
 	}
 
 	renderer_manager &get_renderer() {

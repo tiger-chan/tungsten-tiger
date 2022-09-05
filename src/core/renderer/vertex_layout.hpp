@@ -55,6 +55,7 @@ namespace tt {
 		uint8 attrs[VA_COUNT];
 		detail_t details[VA_COUNT];
 		int8 size;
+		int16 stride;
 	};
 
 	extern void layout_begin(vertex_layout &layout);
