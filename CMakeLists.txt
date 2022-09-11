@@ -1,7 +1,21 @@
 cmake_minimum_required(VERSION 3.15)
 project(TungstenTiger CXX)
 
+
 add_executable(${PROJECT_NAME} "src/tungsten_tiger.cpp" src/main.cpp)
+set_target_properties(${PROJECT_NAME}
+	PROPERTIES
+		CXX_STANDARD 17
+		CXX_STANDARD_REQUIRED ON
+)
+
+# Suppress the Debug/Release subdirectory for the build
+set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<0:>")
+set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/$<0:>")
+
+# Needed to ensure BGFX can correctly identify which version of the cpp standard is being used
+target_compile_options(${PROJECT_NAME} PUBLIC $<$<CXX_COMPILER_ID:MSVC>: /Zc:__cplusplus>)
+
 
 find_package(bgfx REQUIRED)
 find_package(glm REQUIRED)
@@ -64,9 +78,7 @@ target_link_libraries(${PROJECT_NAME}
 
 # End Ultralight include
 
-# Copy shader resources to assets directory
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/assets/shaders/runtime" "${ASSETS_PATH}/")
+add_subdirectory(assets)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_LIST_DIR}/assets/resources" "${ASSETS_PATH}/resources")

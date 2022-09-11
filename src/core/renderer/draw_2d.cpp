@@ -41,8 +41,8 @@ namespace tt {
 	}
 
 	void drawing_2d::init() {
-		vertex_shader = get_renderer().create_shader("vs_line.bin", shader_stage::vertex);
-		fragment_shader = get_renderer().create_shader("fs_line.bin", shader_stage::fragment);
+		vertex_shader = get_renderer().create_shader("line.vert.bin", shader_stage::vertex);
+		fragment_shader = get_renderer().create_shader("line.frag.bin", shader_stage::fragment);
 
 		shader_program = get_renderer().create_shader_program(vertex_shader, fragment_shader);
 

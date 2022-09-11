@@ -43,8 +43,8 @@ namespace tt {
 		ultralight::Platform::instance().set_surface_factory(::surface_factory());
 		ultralight::Platform::instance().set_file_system(::file_sys());
 
-		vertex_shader = tt::get_renderer().create_shader("vs_texture.bin", tt::shader_stage::vertex);
-		fragment_shader = tt::get_renderer().create_shader("fs_texture.bin", tt::shader_stage::fragment);
+		vertex_shader = tt::get_renderer().create_shader("ul_texture.vert.bin", tt::shader_stage::vertex);
+		fragment_shader = tt::get_renderer().create_shader("ul_texture.frag.bin", tt::shader_stage::fragment);
 
 		shader_program = tt::get_renderer().create_shader_program(vertex_shader, fragment_shader);
 

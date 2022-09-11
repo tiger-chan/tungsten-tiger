@@ -26,7 +26,7 @@ class TungstenTigerConan(ConanFile):
     exports_sources = "CMakeLists.txt", "src/*"
 
     requires = [
-        "bgfx/1.115.8144-1b2b921",
+        "bgfx/1.115.8266-06b9950",
         "sdl/2.0.20",
         "glm/0.9.9.8",
         "entt/3.10.1",
@@ -53,6 +53,9 @@ class TungstenTigerConan(ConanFile):
 
         deps = CMakeDeps(self)
         deps.generate()
+
+    def configure(self):
+        self.options["bgfx"].build_tools = True
 
     def build(self):
         cmake = CMake(self)
